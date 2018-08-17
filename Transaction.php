@@ -41,12 +41,12 @@ class Transaction {
         try {
             $this->pdo->beginTransaction();
  
-            // get available amount of the transferer account
-            // $sql = 'SELECT amount FROM accounts WHERE id=:from';
-            // $stmt = $this->pdo->prepare($sql);
-            // $stmt->execute(array(":from" => $from));
-            // $availableAmount = (int) $stmt->fetchColumn();
-            // $stmt->closeCursor();
+            //get available amount of the transferer account
+            $sql = 'SELECT amount FROM accounts WHERE id=:from';
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute(array(":from" => $from));
+            $availableAmount = (int) $stmt->fetchColumn();
+            $stmt->closeCursor();
  
             // ---> to do here ตรวจสอบว่ามีเงินที่จะโอนมีน้อยกว่าในบัญชีหรือไม่
 
@@ -72,7 +72,12 @@ class Transaction {
             $availableAmount = (int) $stmt->fetchColumn();
             $stmt->closeCursor();
  
-            // ---> to do here ***************
+            if ($availableAmount<=$amount){
+                return "จำนวนเงินไม่เพียงพอ";
+            }
+            if ($availableAmount<0){
+                mysqli_rollback($amount,$availableAmount);
+            }
  
             // commit the transaction
             $this->pdo->commit();
