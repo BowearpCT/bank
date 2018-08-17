@@ -49,6 +49,9 @@ class Transaction {
             $stmt->closeCursor();
  
             // ---> to do here ตรวจสอบว่ามีเงินที่จะโอนมีน้อยกว่าในบัญชีหรือไม่
+            if ($availableAmount<$amount){
+                return "จำนวนเงินไม่เพียงพอ";
+            }
 
             // deduct from the transferred account
             $sql_update_from = 'UPDATE accounts
@@ -72,9 +75,7 @@ class Transaction {
             $availableAmount = (int) $stmt->fetchColumn();
             $stmt->closeCursor();
  
-            if ($availableAmount<=$amount){
-                return "จำนวนเงินไม่เพียงพอ";
-            }
+            
             if ($availableAmount<0){
                 mysqli_rollback($amount,$availableAmount);
             }
